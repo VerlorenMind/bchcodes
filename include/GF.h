@@ -46,7 +46,8 @@ public:
     uint64_t mul(const uint64_t& a, const uint64_t& b) const;
     uint64_t inv(const uint64_t& a) const;
     uint64_t min_poly(const uint64_t& a) const;
-    uint64_t get_elem_deg(uint64_t elem);
+    uint64_t get_elem_deg(uint64_t elem) const;
+    uint64_t pow(const uint64_t& a, int pow) const;
     bool is_in(const uint64_t& x) const;
     uint64_t get_deg() const;
     uint64_t get_num() const;

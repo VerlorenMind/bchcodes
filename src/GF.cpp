@@ -19,7 +19,7 @@ GF2::GF2(uint64_t pow)
     }
     this->deg = pow;
     primitive = PRIMITIVE_POLYS[pow];
-    num = uint64_t((1<<pow)-1);
+    num = ((uint64_t(1)<<pow)-1);
 
     logs = new std::pair<uint64_t, uint64_t>[num];
     std::pair<uint64_t, uint64_t> gen;
@@ -48,17 +48,17 @@ GF2::~GF2()
 {
     deg = 0;
     primitive = 0;
-    logs = nullptr;
+    delete[] logs;
     num = 0;
 }
 
 uint64_t GF2::add(const uint64_t& a, const uint64_t& b) const
 {
-    if(a >= (1 << this->deg))
+    if(a >= (uint64_t(1) << this->deg))
     {
         std::cerr<<"Can't add element: a="<<a<<" is not from GF(2^"<<deg<<")\n";
     }
-    if(b >= (1 << this->deg))
+    if(b >= (uint64_t(1) << this->deg))
     {
         std::cerr<<"Can't add element: b="<<b<<" is not from GF(2^"<<deg<<")\n";
     }
@@ -67,11 +67,11 @@ uint64_t GF2::add(const uint64_t& a, const uint64_t& b) const
 
 uint64_t GF2::mul(const uint64_t& a, const uint64_t& b) const
 {
-    if(a >= (1 << this->deg))
+    if(a >= (uint64_t(1) << this->deg))
     {
         std::cerr<<"Can't mul element: a="<<a<<" is not from GF(2^"<<deg<<")\n";
     }
-    if(b >= (1 << this->deg))
+    if(b >= (uint64_t(1) << this->deg))
     {
         std::cerr<<"Can't mul element: b="<<b<<" is not from GF(2^"<<deg<<")\n";
     }
@@ -79,7 +79,7 @@ uint64_t GF2::mul(const uint64_t& a, const uint64_t& b) const
     {
         return 0;
     }
-    uint64_t deg1, deg2;
+    uint64_t deg1 = 0, deg2 = 0;
     for(uint64_t i=0; i<num; ++i)
     {
         if(logs[i].first == a)
@@ -91,16 +91,53 @@ uint64_t GF2::mul(const uint64_t& a, const uint64_t& b) const
             deg2 = logs[i].second;
         }
     }
-    uint64_t deg = mod(deg1+deg2, num);
+    uint64_t res = mod(deg1+deg2, num);
 #ifdef DEBUG
     std::cout<<"Deg of a: "<<deg1<<"; Deg of b: "<<deg2<<"; Deg of mult:"<<deg<<"; Num+1="<<num+1<<"\n";
 #endif
-    return logs[deg].first;
+    return logs[res].first;
+}
+
+uint64_t GF2::pow(const uint64_t& a, int pow) const
+{
+    if(a >= (uint64_t(1) << this->deg))
+    {
+        std::cerr<<"Can't pow element: a="<<a<<" is not from GF(2^"<<deg<<")\n";
+    }
+    if(pow < 0)
+    {
+        std::cerr<<"Can't pow element: negative power is not supported\n";
+    }
+    if(pow == 0)
+    {
+        return 1;
+    }
+    if(pow == 1)
+    {
+        return a;
+    }
+    if(a == 0)
+    {
+        return 0;
+    }
+    uint64_t deg1 = 0;
+    for(uint64_t i=0; i<num; ++i)
+    {
+        if(logs[i].first == a)
+        {
+            deg1 = logs[i].second;
+        }
+    }
+    uint64_t res = mod(deg1*pow, num);
+#ifdef DEBUG
+    std::cout<<"Deg of a: "<<deg1<<"; Deg of b: "<<deg2<<"; Deg of mult:"<<deg<<"; Num+1="<<num+1<<"\n";
+#endif
+    return logs[res].first;
 }
 
 uint64_t GF2::inv(const uint64_t& a) const
 {
-    if(a >= (1 << this->deg))
+    if(a >= (uint64_t(1) << this->deg))
     {
         std::cerr<<"Can't inv element: a="<<a<<" is not from GF(2^"<<deg<<")\n";
     }
@@ -108,7 +145,7 @@ uint64_t GF2::inv(const uint64_t& a) const
     {
         return 0;
     }
-    uint64_t a_pow;
+    uint64_t a_pow = 0;
     for(uint64_t i=0; i<num; ++i)
     {
         if(logs[i].first == a)
@@ -124,7 +161,7 @@ uint64_t GF2::inv(const uint64_t& a) const
 
 uint64_t GF2::min_poly(const uint64_t& a) const
 {
-    if(a >= (1 << this->deg))
+    if(a >= (uint64_t(1) << this->deg))
     {
         std::cerr<<"Can't find min poly for element: a="<<a<<" is not from GF(2^"<<deg<<")\n";
     }
@@ -168,11 +205,11 @@ GF2::GF2() {
     deg = 0;
     primitive = 0;
     num = 0;
-    logs = NULL;
+    logs = nullptr;
 }
 
 bool GF2::is_in(const uint64_t& x) const {
-    return x < (1 << deg);
+    return x < (uint64_t(1) << deg);
 }
 
 uint64_t GF2::get_deg() const {
@@ -203,7 +240,7 @@ GF2::GF2(const GF2 &a) {
     }
 }
 
-uint64_t GF2::get_elem_deg(uint64_t elem) {
+uint64_t GF2::get_elem_deg(uint64_t elem) const {
     if(!is_in(elem))
     {
         std::cerr<<"Can't get elem degree; x="<<elem<<" is not from GF(2^"<<deg<<")\n";
@@ -412,9 +449,9 @@ uint64_t GF2X::eval(const uint64_t &x) const {
 }
 
 std::string GF2X::print() {
-    std::string ans = "";
-    std::string x = "";
-    for(int i=0; i<=deg; ++i)
+    std::string ans;
+    std::string x;
+    for(uint64_t i=0; i<=deg; ++i)
     {
         if(c[i] == 0)
         {
@@ -531,7 +568,7 @@ uint64_t* GF2X::roots(uint64_t& num)
         {
             temp[i] = root[i];
         }
-        delete [] root;
+        delete root;
         root = temp;
     }
     return root;
