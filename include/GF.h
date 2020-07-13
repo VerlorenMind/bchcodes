@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+typedef unsigned __int128 uint128;
+
 const uint64_t PRIMITIVE_POLYS[17] =
         {
                 0,
@@ -45,7 +47,7 @@ public:
     uint64_t add(const uint64_t& a, const uint64_t& b) const;
     uint64_t mul(const uint64_t& a, const uint64_t& b) const;
     uint64_t inv(const uint64_t& a) const;
-    uint64_t min_poly(const uint64_t& a) const;
+    uint128 min_poly(const uint64_t& a) const;
     uint64_t get_elem_deg(uint64_t elem) const;
     uint64_t pow(const uint64_t& a, int pow) const;
     bool is_in(const uint64_t& x) const;
@@ -82,10 +84,10 @@ public:
 
 };
 
-uint64_t mul_poly(uint64_t a, uint64_t b);
-void div_poly(const uint64_t& a, const uint64_t& b, uint64_t &q, uint64_t &r);
-uint64_t gcd_poly(uint64_t a, uint64_t b);
-uint64_t lcm_poly(uint64_t a, uint64_t b);
+uint128 mul_poly(uint128 a, uint128 b);
+void div_poly(const uint128& a, const uint128& b, uint128 &q, uint128 &r);
+uint128 gcd_poly(uint128 a, uint128 b);
+uint128 lcm_poly(uint128 a, uint128 b);
 uint64_t mod(uint64_t a, uint64_t b);
 
 #endif //BCH_GF_H

@@ -159,7 +159,7 @@ uint64_t GF2::inv(const uint64_t& a) const
 }
 
 
-uint64_t GF2::min_poly(const uint64_t& a) const
+uint128 GF2::min_poly(const uint64_t& a) const
 {
     if(a >= (uint64_t(1) << this->deg))
     {
@@ -193,7 +193,7 @@ uint64_t GF2::min_poly(const uint64_t& a) const
         poly = temp;
         temp.assign(temp.size(), 0);
     }
-    uint64_t ans = 0;
+    uint128 ans = 0;
     for(uint64_t i=0; i< poly.size(); ++i)
     {
         ans += (poly[i] << i);
@@ -260,9 +260,9 @@ uint64_t GF2::get_num() const {
 }
 
 
-uint64_t mul_poly(uint64_t a, uint64_t b)
+uint128 mul_poly(uint128 a, uint128 b)
 {
-    uint64_t ans = 0;
+    uint128 ans = 0;
     for(uint64_t i=0; b != 0; ++i)
     {
         if(b % 2 == 1)
@@ -274,14 +274,14 @@ uint64_t mul_poly(uint64_t a, uint64_t b)
     return ans;
 }
 
-void div_poly(const uint64_t& a, const uint64_t& b, uint64_t &q, uint64_t &r) {
+void div_poly(const uint128& a, const uint128& b, uint128 &q, uint128 &r) {
     if (b == 0)
     {
         std::cerr<<"Invalid division, b=0!\n";
         return;
     }
     uint64_t b_pow = 0;
-    uint64_t b_temp = b;
+    uint128 b_temp = b;
     r = a;
     q = 0;
     while(b_temp > 0)
@@ -290,7 +290,7 @@ void div_poly(const uint64_t& a, const uint64_t& b, uint64_t &q, uint64_t &r) {
         b_temp >>= 1;
     }
     --b_pow;
-    uint64_t r_temp;
+    uint128 r_temp;
     uint64_t r_pow;
     while(b <= r)
     {
@@ -302,13 +302,13 @@ void div_poly(const uint64_t& a, const uint64_t& b, uint64_t &q, uint64_t &r) {
             r_temp >>= 1;
         }
         --r_pow;
-        q ^= uint64_t(1) << (r_pow - b_pow);
+        q ^= uint128(1) << (r_pow - b_pow);
         r ^= b << (r_pow - b_pow);
     }
 }
 
-uint64_t gcd_poly(uint64_t a, uint64_t b) {
-    uint64_t q, r;
+uint128 gcd_poly(uint128 a, uint128 b) {
+    uint128 q, r;
     while(b != 0)
     {
         div_poly(a, b, q, r);
@@ -318,11 +318,11 @@ uint64_t gcd_poly(uint64_t a, uint64_t b) {
     return a;
 }
 
-uint64_t lcm_poly(uint64_t a, uint64_t b)
+uint128 lcm_poly(uint128 a, uint128 b)
 {
-    uint64_t denom = gcd_poly(a, b);
-    uint64_t ab = mul_poly(a, b);
-    uint64_t q, r;
+    uint128 denom = gcd_poly(a, b);
+    uint128 ab = mul_poly(a, b);
+    uint128 q, r;
     div_poly(ab, denom, q, r);
     return q;
 }

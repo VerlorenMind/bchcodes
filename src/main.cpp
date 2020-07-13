@@ -29,7 +29,7 @@ int main(int argc,  char** argv) {
             buf = fout.rdbuf();
         }
         std::ostream output(buf);
-        build_bch_matrices(n, d, output);
+        // build_bch_matrices(n, d, output);
         build_bch_matrices_bit_order(n, d, output);
         fout.close();
     }
